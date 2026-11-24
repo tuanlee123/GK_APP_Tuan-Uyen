@@ -95,6 +95,54 @@
         </com.google.android.material.chip.ChipGroup>
     </HorizontalScrollView>
 
+    <!-- Filter & Sort Toolbar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="2dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvProductCount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/colorTextSecondary"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            tools:text="Hiển thị 12 sản phẩm" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSortOption"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:paddingStart="10dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="4dp"
+            android:text="Sắp xếp: Mặc định"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="12sp"
+            app:cornerRadius="8dp"
+            app:icon="@drawable/ic_sort"
+            app:iconGravity="textStart"
+            app:iconPadding="6dp"
+            app:iconSize="16dp"
+            app:iconTint="@color/colorSecondary"
+            app:strokeColor="@color/colorOutline"
+            app:strokeWidth="1dp" />
+
+    </LinearLayout>
+
     <!-- Empty State -->
     <LinearLayout
         android:id="@+id/layoutEmptyState"

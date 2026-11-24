@@ -58,8 +58,9 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Delivery Information Card -->
+            <!-- Delivery Information Card (ShopeeFood style) -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardDeliveryAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardBackgroundColor="@color/colorSurface"
@@ -74,76 +75,166 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Thông tin nhận hàng"
-                        android:textColor="@color/colorTextPrimary"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/tilCustomerName"
-                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    <!-- State 1: When user has an address selected -->
+                    <LinearLayout
+                        android:id="@+id/layoutSelectedAddress"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:hint="Họ và tên người nhận"
-                        app:boxCornerRadiusBottomEnd="10dp"
-                        app:boxCornerRadiusBottomStart="10dp"
-                        app:boxCornerRadiusTopEnd="10dp"
-                        app:boxCornerRadiusTopStart="10dp"
-                        app:startIconDrawable="@drawable/ic_person">
+                        android:orientation="vertical"
+                        android:visibility="visible">
 
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/edtCustomerName"
+                        <!-- Header row: Icon Location + Title + Change button -->
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="textPersonName"
-                            android:textColor="@color/colorTextPrimary" />
-                    </com.google.android.material.textfield.TextInputLayout>
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/tilCustomerPhone"
-                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:contentDescription="Địa chỉ nhận hàng"
+                                android:src="@drawable/ic_location"
+                                app:tint="@color/colorSecondary" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_weight="1"
+                                android:text="Địa chỉ nhận hàng"
+                                android:textColor="@color/colorTextPrimary"
+                                android:textSize="15sp"
+                                android:textStyle="bold" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnChangeAddress"
+                                style="@style/Widget.Material3.Button.TextButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="36dp"
+                                android:minHeight="0dp"
+                                android:paddingStart="8dp"
+                                android:paddingEnd="0dp"
+                                android:text="Thay đổi >"
+                                android:textColor="@color/colorSecondary"
+                                android:textSize="13sp" />
+
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginBottom="10dp"
+                            android:background="@color/colorOutline" />
+
+                        <!-- Receiver Name & Phone + Badge -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tvCheckoutReceiverName"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/colorTextPrimary"
+                                android:textSize="15sp"
+                                android:textStyle="bold"
+                                tools:text="Lê Tuấn" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginEnd="8dp"
+                                android:text="•"
+                                android:textColor="@color/colorOutline" />
+
+                            <TextView
+                                android:id="@+id/tvCheckoutReceiverPhone"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:textColor="@color/colorTextPrimary"
+                                android:textSize="15sp"
+                                android:textStyle="bold"
+                                tools:text="0912345678" />
+
+                            <TextView
+                                android:id="@+id/tvCheckoutDefaultBadge"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/shape_default_badge"
+                                android:paddingStart="6dp"
+                                android:paddingTop="2dp"
+                                android:paddingEnd="6dp"
+                                android:paddingBottom="2dp"
+                                android:text="Mặc định"
+                                android:textColor="@color/colorSecondary"
+                                android:textSize="11sp"
+                                android:textStyle="bold"
+                                android:visibility="gone"
+                                tools:visibility="visible" />
+
+                        </LinearLayout>
+
+                        <!-- Detail Address -->
+                        <TextView
+                            android:id="@+id/tvCheckoutDetailAddress"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:lineSpacingExtra="2dp"
+                            android:maxLines="3"
+                            android:textColor="@color/colorTextSecondary"
+                            android:textSize="13sp"
+                            tools:text="Số 123 Đường Nguyễn Huệ, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh" />
+
+                    </LinearLayout>
+
+                    <!-- State 2: When user has NO address yet -->
+                    <LinearLayout
+                        android:id="@+id/layoutNoAddress"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:hint="Số điện thoại"
-                        app:boxCornerRadiusBottomEnd="10dp"
-                        app:boxCornerRadiusBottomStart="10dp"
-                        app:boxCornerRadiusTopEnd="10dp"
-                        app:boxCornerRadiusTopStart="10dp"
-                        app:startIconDrawable="@drawable/ic_phone">
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:visibility="gone">
 
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/edtCustomerPhone"
-                            android:layout_width="match_parent"
+                        <ImageView
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:contentDescription="Chưa có địa chỉ"
+                            android:src="@drawable/ic_location"
+                            app:tint="@color/colorSecondary" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:inputType="phone"
-                            android:textColor="@color/colorTextPrimary" />
-                    </com.google.android.material.textfield.TextInputLayout>
+                            android:layout_marginTop="8dp"
+                            android:text="Bạn chưa có địa chỉ nhận hàng"
+                            android:textColor="@color/colorTextSecondary"
+                            android:textSize="14sp" />
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/tilCustomerAddress"
-                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:hint="Địa chỉ giao hàng chi tiết"
-                        app:boxCornerRadiusBottomEnd="10dp"
-                        app:boxCornerRadiusBottomStart="10dp"
-                        app:boxCornerRadiusTopEnd="10dp"
-                        app:boxCornerRadiusTopStart="10dp"
-                        app:startIconDrawable="@drawable/ic_location">
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnAddNewAddressCheckout"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="40dp"
+                            android:layout_marginTop="10dp"
+                            android:minHeight="0dp"
+                            android:text="+ Thêm địa chỉ giao hàng"
+                            android:textColor="@color/colorSecondary"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            app:cornerRadius="10dp"
+                            app:strokeColor="@color/colorSecondary" />
 
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/edtCustomerAddress"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="textPostalAddress"
-                            android:textColor="@color/colorTextPrimary" />
-                    </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

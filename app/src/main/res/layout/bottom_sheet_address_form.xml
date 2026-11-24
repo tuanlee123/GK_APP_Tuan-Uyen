@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/shape_bottom_sheet_background"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <!-- Drag Handle -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp"
+        android:background="@color/colorOutline" />
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/tvFormTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorTextPrimary"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        tools:text="Thêm địa chỉ giao hàng" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="16dp"
+        android:background="@color/colorOutline" />
+
+    <!-- Receiver Name -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilReceiverName"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Họ và tên người nhận"
+        app:boxCornerRadiusBottomEnd="10dp"
+        app:boxCornerRadiusBottomStart="10dp"
+        app:boxCornerRadiusTopEnd="10dp"
+        app:boxCornerRadiusTopStart="10dp"
+        app:startIconDrawable="@drawable/ic_person">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edtReceiverName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:textColor="@color/colorTextPrimary" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Phone -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilReceiverPhone"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:hint="Số điện thoại người nhận"
+        app:boxCornerRadiusBottomEnd="10dp"
+        app:boxCornerRadiusBottomStart="10dp"
+        app:boxCornerRadiusTopEnd="10dp"
+        app:boxCornerRadiusTopStart="10dp"
+        app:startIconDrawable="@drawable/ic_phone">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edtReceiverPhone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="phone"
+            android:textColor="@color/colorTextPrimary" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Detail Address -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilDetailAddress"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:hint="Địa chỉ chi tiết (Số nhà, đường, phường, quận, tỉnh)"
+        app:boxCornerRadiusBottomEnd="10dp"
+        app:boxCornerRadiusBottomStart="10dp"
+        app:boxCornerRadiusTopEnd="10dp"
+        app:boxCornerRadiusTopStart="10dp"
+        app:startIconDrawable="@drawable/ic_location">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edtDetailAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="top|start"
+            android:inputType="textMultiLine"
+            android:minLines="2"
+            android:textColor="@color/colorTextPrimary" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Default switch -->
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/switchDefault"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="Đặt làm địa chỉ mặc định"
+        android:textColor="@color/colorTextPrimary"
+        android:textSize="14sp" />
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progressBarSaveAddress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="12dp"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:indicatorColor="@color/colorSecondary" />
+
+    <!-- Save Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSaveAddress"
+        style="@style/Widget.Material3.Button"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="16dp"
+        android:text="Lưu địa chỉ"
+        android:textColor="@color/colorOnPrimary"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:backgroundTint="@color/colorPrimary"
+        app:cornerRadius="12dp" />
+
+</LinearLayout>

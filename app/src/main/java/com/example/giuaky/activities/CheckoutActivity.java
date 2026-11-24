@@ -2,6 +2,7 @@ package com.example.giuaky.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -13,30 +14,39 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.giuaky.R;
+import com.example.giuaky.adapters.AddressSelectAdapter;
 import com.example.giuaky.adapters.OrderSummaryAdapter;
 import com.example.giuaky.constants.FirestoreConstants;
+import com.example.giuaky.fragments.AddressFormBottomSheet;
 import com.example.giuaky.models.CartItem;
 import com.example.giuaky.models.Order;
 import com.example.giuaky.models.OrderItem;
-import com.example.giuaky.models.User;
+import com.example.giuaky.models.ShippingAddress;
 import com.example.giuaky.utils.CurrencyUtils;
-import com.example.giuaky.utils.ValidationUtils;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class CheckoutActivity extends AppCompatActivity {
 
-    private TextInputLayout tilCustomerName, tilCustomerPhone, tilCustomerAddress;
-    private TextInputEditText edtCustomerName, edtCustomerPhone, edtCustomerAddress;
+    private View layoutSelectedAddress;
+    private View layoutNoAddress;
+    private TextView tvCheckoutReceiverName;
+    private TextView tvCheckoutReceiverPhone;
+    private TextView tvCheckoutDefaultBadge;
+    private TextView tvCheckoutDetailAddress;
+    private MaterialButton btnChangeAddress;
+    private MaterialButton btnAddNewAddressCheckout;
+
     private RadioGroup rgPaymentMethod;
     private TextView tvSubtotal, tvCheckoutTotal;
     private CircularProgressIndicator progressBarCheckout;
@@ -46,7 +56,9 @@ public class CheckoutActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
 
     private boolean isFromCart = false;
-    private ArrayList<CartItem> checkoutItems = new ArrayList<>();
+    private final ArrayList<CartItem> checkoutItems = new ArrayList<>();
+    private final List<ShippingAddress> userAddresses = new ArrayList<>();
+    private ShippingAddress selectedAddress = null;
     private double totalAmount = 0;
 
     @Override
@@ -70,12 +82,15 @@ public class CheckoutActivity extends AppCompatActivity {
             return;
         }
 
-        tilCustomerName = findViewById(R.id.tilCustomerName);
-        tilCustomerPhone = findViewById(R.id.tilCustomerPhone);
-        tilCustomerAddress = findViewById(R.id.tilCustomerAddress);
-        edtCustomerName = findViewById(R.id.edtCustomerName);
-        edtCustomerPhone = findViewById(R.id.edtCustomerPhone);
-        edtCustomerAddress = findViewById(R.id.edtCustomerAddress);
+        layoutSelectedAddress = findViewById(R.id.layoutSelectedAddress);
+        layoutNoAddress = findViewById(R.id.layoutNoAddress);
+        tvCheckoutReceiverName = findViewById(R.id.tvCheckoutReceiverName);
+        tvCheckoutReceiverPhone = findViewById(R.id.tvCheckoutReceiverPhone);
+        tvCheckoutDefaultBadge = findViewById(R.id.tvCheckoutDefaultBadge);
+        tvCheckoutDetailAddress = findViewById(R.id.tvCheckoutDetailAddress);
+        btnChangeAddress = findViewById(R.id.btnChangeAddress);
+        btnAddNewAddressCheckout = findViewById(R.id.btnAddNewAddressCheckout);
+
         rgPaymentMethod = findViewById(R.id.rgPaymentMethod);
         tvSubtotal = findViewById(R.id.tvSubtotal);
         tvCheckoutTotal = findViewById(R.id.tvCheckoutTotal);
@@ -84,14 +99,18 @@ public class CheckoutActivity extends AppCompatActivity {
 
         findViewById(R.id.btnCheckoutBack).setOnClickListener(v -> finish());
 
-        // Setup RecyclerView
+        // Address interactions
+        btnChangeAddress.setOnClickListener(v -> showAddressSelectionBottomSheet());
+        btnAddNewAddressCheckout.setOnClickListener(v -> openAddAddressBottomSheet());
+
+        // Setup RecyclerView Order Items
         RecyclerView rvOrderSummary = findViewById(R.id.rvOrderSummary);
         rvOrderSummary.setLayoutManager(new LinearLayoutManager(this));
         rvOrderSummary.setAdapter(new OrderSummaryAdapter(this, checkoutItems));
 
         calculateTotal();
 
-        loadUserInfo();
+        loadUserAddresses();
 
         btnPlaceOrder.setOnClickListener(v -> attemptPlaceOrder());
     }
@@ -105,50 +124,120 @@ public class CheckoutActivity extends AppCompatActivity {
         tvCheckoutTotal.setText(CurrencyUtils.formatVnd(totalAmount));
     }
 
-    private void loadUserInfo() {
+    private void loadUserAddresses() {
         if (mAuth.getCurrentUser() == null) return;
         String uid = mAuth.getCurrentUser().getUid();
 
         db.collection(FirestoreConstants.COLLECTION_USERS)
                 .document(uid)
+                .collection(FirestoreConstants.COLLECTION_ADDRESSES)
                 .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        User user = documentSnapshot.toObject(User.class);
-                        if (user != null && user.getFullName() != null && !user.getFullName().isEmpty()) {
-                            edtCustomerName.setText(user.getFullName());
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    userAddresses.clear();
+                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                        ShippingAddress address = doc.toObject(ShippingAddress.class);
+                        if (address.getId() == null || address.getId().isEmpty()) {
+                            address.setId(doc.getId());
+                        }
+                        userAddresses.add(address);
+                    }
+
+                    // Sort so default is first
+                    Collections.sort(userAddresses, (a1, a2) -> Boolean.compare(a2.isDefault(), a1.isDefault()));
+
+                    // If no address is currently selected, pick the default one (or first one)
+                    if (selectedAddress == null) {
+                        for (ShippingAddress addr : userAddresses) {
+                            if (addr.isDefault()) {
+                                selectedAddress = addr;
+                                break;
+                            }
+                        }
+                        if (selectedAddress == null && !userAddresses.isEmpty()) {
+                            selectedAddress = userAddresses.get(0);
+                        }
+                    } else {
+                        // Keep selection in sync with loaded addresses
+                        boolean found = false;
+                        for (ShippingAddress addr : userAddresses) {
+                            if (addr.getId().equals(selectedAddress.getId())) {
+                                selectedAddress = addr;
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found && !userAddresses.isEmpty()) {
+                            selectedAddress = userAddresses.get(0);
+                        } else if (userAddresses.isEmpty()) {
+                            selectedAddress = null;
                         }
                     }
+
+                    updateAddressUI();
                 });
     }
 
+    private void updateAddressUI() {
+        if (selectedAddress != null) {
+            layoutSelectedAddress.setVisibility(View.VISIBLE);
+            layoutNoAddress.setVisibility(View.GONE);
+
+            tvCheckoutReceiverName.setText(selectedAddress.getReceiverName());
+            tvCheckoutReceiverPhone.setText(selectedAddress.getPhone());
+            tvCheckoutDetailAddress.setText(selectedAddress.getDetailAddress());
+            tvCheckoutDefaultBadge.setVisibility(selectedAddress.isDefault() ? View.VISIBLE : View.GONE);
+        } else {
+            layoutSelectedAddress.setVisibility(View.GONE);
+            layoutNoAddress.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void showAddressSelectionBottomSheet() {
+        if (userAddresses.isEmpty()) {
+            openAddAddressBottomSheet();
+            return;
+        }
+
+        BottomSheetDialog dialog = new BottomSheetDialog(this);
+        View bottomSheetView = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_select_address, null);
+        dialog.setContentView(bottomSheetView);
+
+        RecyclerView rvSelectableAddresses = bottomSheetView.findViewById(R.id.rvSelectableAddresses);
+        MaterialButton btnAddNewAddressFromSelect = bottomSheetView.findViewById(R.id.btnAddNewAddressFromSelect);
+
+        String currentSelectedId = selectedAddress != null ? selectedAddress.getId() : "";
+        AddressSelectAdapter adapter = new AddressSelectAdapter(this, currentSelectedId, address -> {
+            selectedAddress = address;
+            updateAddressUI();
+            dialog.dismiss();
+        });
+
+        rvSelectableAddresses.setLayoutManager(new LinearLayoutManager(this));
+        rvSelectableAddresses.setAdapter(adapter);
+        adapter.updateList(userAddresses, currentSelectedId);
+
+        btnAddNewAddressFromSelect.setOnClickListener(v -> {
+            dialog.dismiss();
+            openAddAddressBottomSheet();
+        });
+
+        dialog.show();
+    }
+
+    private void openAddAddressBottomSheet() {
+        AddressFormBottomSheet sheet = AddressFormBottomSheet.newInstance(null, !userAddresses.isEmpty());
+        sheet.setOnAddressSavedListener(newAddress -> {
+            selectedAddress = newAddress;
+            loadUserAddresses();
+        });
+        sheet.show(getSupportFragmentManager(), "checkout_add_address");
+    }
+
     private void attemptPlaceOrder() {
-        tilCustomerName.setError(null);
-        tilCustomerPhone.setError(null);
-        tilCustomerAddress.setError(null);
-
-        String name = edtCustomerName.getText() != null ? edtCustomerName.getText().toString().trim() : "";
-        String phone = edtCustomerPhone.getText() != null ? edtCustomerPhone.getText().toString().trim() : "";
-        String address = edtCustomerAddress.getText() != null ? edtCustomerAddress.getText().toString().trim() : "";
-
-        boolean valid = true;
-
-        if (!ValidationUtils.isNotEmpty(name)) {
-            tilCustomerName.setError("Vui lòng nhập họ và tên người nhận");
-            valid = false;
+        if (selectedAddress == null) {
+            Toast.makeText(this, "Vui lòng thêm hoặc chọn địa chỉ nhận hàng", Toast.LENGTH_LONG).show();
+            return;
         }
-
-        if (!ValidationUtils.isNotEmpty(phone) || phone.length() < 9) {
-            tilCustomerPhone.setError("Vui lòng nhập số điện thoại hợp lệ (từ 9 số)");
-            valid = false;
-        }
-
-        if (!ValidationUtils.isNotEmpty(address)) {
-            tilCustomerAddress.setError("Vui lòng nhập địa chỉ giao hàng");
-            valid = false;
-        }
-
-        if (!valid) return;
 
         if (mAuth.getCurrentUser() == null) {
             Toast.makeText(this, "Vui lòng đăng nhập để đặt hàng", Toast.LENGTH_SHORT).show();
@@ -181,9 +270,9 @@ public class CheckoutActivity extends AppCompatActivity {
         Order newOrder = new Order(
                 orderId,
                 uid,
-                name,
-                phone,
-                address,
+                selectedAddress.getReceiverName(),
+                selectedAddress.getPhone(),
+                selectedAddress.getDetailAddress(),
                 paymentMethod,
                 orderItems,
                 totalAmount,

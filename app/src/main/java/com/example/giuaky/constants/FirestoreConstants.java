@@ -14,6 +14,7 @@ public final class FirestoreConstants {
     public static final String COLLECTION_ITEMS = "items";
     public static final String COLLECTION_ORDERS = "orders";
     public static final String COLLECTION_REVIEWS = "reviews";
+    public static final String COLLECTION_ADDRESSES = "addresses";
 
     // Field keys
     public static final String FIELD_UID = "uid";
@@ -36,4 +37,8 @@ public final class FirestoreConstants {
     public static final String FIELD_COMMENT = "comment";
     public static final String FIELD_USER_ID = "userId";
     public static final String FIELD_USER_NAME = "userName";
+    public static final String FIELD_RECEIVER_NAME = "receiverName";
+    public static final String FIELD_PHONE = "phone";
+    public static final String FIELD_DETAIL_ADDRESS = "detailAddress";
+    public static final String FIELD_IS_DEFAULT = "isDefault";
 }

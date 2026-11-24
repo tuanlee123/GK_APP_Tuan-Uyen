@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,6 +27,7 @@ import com.example.giuaky.models.Category;
 import com.example.giuaky.models.Product;
 import com.example.giuaky.models.User;
 import com.example.giuaky.utils.SearchUtils;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
@@ -36,15 +38,24 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 public class HomeFragment extends Fragment {
+
+    private static final int SORT_DEFAULT = 0;
+    private static final int SORT_PRICE_ASC = 1;
+    private static final int SORT_PRICE_DESC = 2;
+    private static final int SORT_RATING_DESC = 3;
 
     private TextView tvGreeting;
     private RecyclerView rvProducts;
     private ChipGroup chipGroupCategories;
     private View layoutEmptyState;
+    private TextView tvProductCount;
+    private MaterialButton btnSortOption;
 
     private ProductAdapter productAdapter;
     private final List<Product> allProducts = new ArrayList<>();
@@ -52,6 +63,7 @@ public class HomeFragment extends Fragment {
     // "null" means ALL category selected
     private String selectedCategoryId = null;
     private String searchKeyword = "";
+    private int currentSortOption = SORT_DEFAULT;
 
     private ListenerRegistration categoryListener;
     private ListenerRegistration productListener;
@@ -78,6 +90,8 @@ public class HomeFragment extends Fragment {
         rvProducts = view.findViewById(R.id.rvProducts);
         chipGroupCategories = view.findViewById(R.id.chipGroupCategories);
         layoutEmptyState = view.findViewById(R.id.layoutEmptyState);
+        tvProductCount = view.findViewById(R.id.tvProductCount);
+        btnSortOption = view.findViewById(R.id.btnSortOption);
         TextInputEditText edtSearch = view.findViewById(R.id.edtSearch);
 
         // Setup RecyclerView
@@ -118,6 +132,9 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        // Setup sort button
+        btnSortOption.setOnClickListener(this::showSortMenu);
+
         // Listen to categories
         listenToCategories();
 
@@ -132,6 +149,31 @@ public class HomeFragment extends Fragment {
                 applyFilters();
             }
         });
+    }
+
+    private void showSortMenu(View anchor) {
+        PopupMenu popup = new PopupMenu(requireContext(), anchor);
+        popup.getMenu().add(0, SORT_DEFAULT, 0, "Mặc định");
+        popup.getMenu().add(0, SORT_PRICE_ASC, 1, "Giá: Thấp đến Cao");
+        popup.getMenu().add(0, SORT_PRICE_DESC, 2, "Giá: Cao đến Thấp");
+        popup.getMenu().add(0, SORT_RATING_DESC, 3, "Đánh giá cao nhất");
+
+        popup.setOnMenuItemClickListener(item -> {
+            int id = item.getItemId();
+            if (id == SORT_DEFAULT) {
+                currentSortOption = SORT_DEFAULT;
+            } else if (id == SORT_PRICE_ASC) {
+                currentSortOption = SORT_PRICE_ASC;
+            } else if (id == SORT_PRICE_DESC) {
+                currentSortOption = SORT_PRICE_DESC;
+            } else if (id == SORT_RATING_DESC) {
+                currentSortOption = SORT_RATING_DESC;
+            }
+            applyFilters();
+            return true;
+        });
+
+        popup.show();
     }
 
     private void addProductToCart(Product product) {
@@ -227,7 +269,6 @@ public class HomeFragment extends Fragment {
 
                     for (QueryDocumentSnapshot doc : snapshots) {
                         Category category = doc.toObject(Category.class);
-                        // Fallback: if @DocumentId not populated, set manually
                         if (category.getId() == null || category.getId().isEmpty()) {
                             category.setId(doc.getId());
                         }
@@ -258,7 +299,6 @@ public class HomeFragment extends Fragment {
                     allProducts.clear();
                     for (QueryDocumentSnapshot doc : snapshots) {
                         Product product = doc.toObject(Product.class);
-                        // Fallback for @DocumentId
                         if (product.getId() == null || product.getId().isEmpty()) {
                             product.setId(doc.getId());
                         }
@@ -270,6 +310,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void applyFilters() {
+        // Bước 1 & 2: Lọc theo danh mục và từ khóa tìm kiếm
         List<Product> filtered = new ArrayList<>();
 
         for (Product product : allProducts) {
@@ -283,6 +324,37 @@ public class HomeFragment extends Fragment {
             if (matchesCategory && matchesSearch) {
                 filtered.add(product);
             }
+        }
+
+        // Bước 3: Sắp xếp theo tiêu chí được chọn
+        String sortLabel;
+        if (currentSortOption == SORT_PRICE_ASC) {
+            sortLabel = "Giá: Thấp → Cao";
+            Collections.sort(filtered, (p1, p2) -> Double.compare(p1.getPrice(), p2.getPrice()));
+        } else if (currentSortOption == SORT_PRICE_DESC) {
+            sortLabel = "Giá: Cao → Thấp";
+            Collections.sort(filtered, (p1, p2) -> Double.compare(p2.getPrice(), p1.getPrice()));
+        } else if (currentSortOption == SORT_RATING_DESC) {
+            sortLabel = "Đánh giá cao";
+            Collections.sort(filtered, (p1, p2) -> {
+                int comp = Double.compare(p2.getRating(), p1.getRating());
+                if (comp != 0) {
+                    return comp;
+                }
+                return Integer.compare(p2.getSoldCount(), p1.getSoldCount());
+            });
+        } else {
+            sortLabel = "Sắp xếp: Mặc định";
+            // Giữ nguyên thứ tự gốc
+        }
+
+        // Bước 4: Cập nhật giao diện
+        if (btnSortOption != null) {
+            btnSortOption.setText(sortLabel);
+        }
+
+        if (tvProductCount != null) {
+            tvProductCount.setText(String.format(Locale.getDefault(), "Hiển thị %d sản phẩm", filtered.size()));
         }
 
         productAdapter.updateList(filtered);

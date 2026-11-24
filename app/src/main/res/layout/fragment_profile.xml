@@ -17,7 +17,7 @@
         <!-- Header banner -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="120dp"
+            android:layout_height="100dp"
             android:background="@color/colorPrimary"
             android:gravity="center"
             android:orientation="vertical">
@@ -35,7 +35,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="Thành viên Tech Luxury"
+                android:text="Tài khoản cá nhân"
                 android:textColor="#B0C4DE"
                 android:textSize="12sp" />
         </LinearLayout>
@@ -96,22 +96,10 @@
                     android:textSize="14sp"
                     tools:text="letuan@example.com" />
 
-                <!-- Member badge -->
-                <com.google.android.material.chip.Chip
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:checkable="false"
-                    android:text="⭐ Thành viên Tech Luxury"
-                    android:textColor="@color/colorSecondary"
-                    app:chipBackgroundColor="@color/colorPrimaryContainer"
-                    app:chipStrokeColor="@color/colorSecondary"
-                    app:chipStrokeWidth="1dp" />
-
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Info Card -->
+        <!-- Account Info Card -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -128,18 +116,43 @@
                 android:orientation="vertical"
                 android:padding="20dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <!-- Title Row with Edit Button -->
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Thông tin tài khoản"
-                    android:textColor="@color/colorTextPrimary"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Thông tin tài khoản"
+                        android:textColor="@color/colorTextPrimary"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnEditProfile"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:minHeight="0dp"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="0dp"
+                        android:text="Chỉnh sửa"
+                        android:textColor="@color/colorSecondary"
+                        android:textSize="13sp"
+                        app:icon="@drawable/ic_edit"
+                        app:iconSize="16dp"
+                        app:iconTint="@color/colorSecondary" />
+
+                </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="8dp"
                     android:layout_marginBottom="12dp"
                     android:background="@color/colorOutline" />
 
@@ -155,7 +168,6 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:drawablePadding="8dp"
                         android:text="Họ và tên"
                         android:textColor="@color/colorTextSecondary"
                         android:textSize="13sp" />
@@ -202,37 +214,87 @@
                         tools:text="letuan@example.com" />
                 </LinearLayout>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:background="@color/colorOutline" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-                <!-- Member Status row -->
+        <!-- Shipping Addresses Card (ShopeeFood style) -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:cardBackgroundColor="@color/colorSurface"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp"
+            app:strokeColor="@color/colorOutline"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <!-- Header: Title + Add Address Button -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp">
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Trạng thái"
-                        android:textColor="@color/colorTextSecondary"
-                        android:textSize="13sp" />
+                        android:text="Sổ địa chỉ giao hàng"
+                        android:textColor="@color/colorTextPrimary"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
 
-                    <TextView
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnAddNewAddress"
+                        style="@style/Widget.Material3.Button.TextButton"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Thành viên"
+                        android:layout_height="36dp"
+                        android:minHeight="0dp"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="0dp"
+                        android:text="Thêm mới"
                         android:textColor="@color/colorSecondary"
                         android:textSize="13sp"
-                        android:textStyle="bold" />
+                        app:icon="@drawable/ic_add"
+                        app:iconSize="16dp"
+                        app:iconTint="@color/colorSecondary" />
+
                 </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="12dp"
+                    android:background="@color/colorOutline" />
+
+                <!-- Empty state for addresses -->
+                <TextView
+                    android:id="@+id/tvEmptyAddresses"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="16dp"
+                    android:text="Chưa có địa chỉ giao hàng. Thêm địa chỉ để thanh toán nhanh hơn!"
+                    android:textColor="@color/colorTextSecondary"
+                    android:textSize="13sp"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
+                <!-- Addresses RecyclerView -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvShippingAddresses"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    tools:listitem="@layout/item_shipping_address" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
