@@ -87,6 +87,12 @@ public class ProfileFragment extends Fragment implements ShippingAddressAdapter.
             sheet.show(getChildFragmentManager(), "add_new_address");
         });
 
+        View cardMyOrders = view.findViewById(R.id.cardMyOrders);
+        cardMyOrders.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), com.example.giuaky.activities.OrderHistoryActivity.class);
+            startActivity(intent);
+        });
+
         MaterialButton btnLogout = view.findViewById(R.id.btnLogout);
         btnLogout.setOnClickListener(v -> logout());
 

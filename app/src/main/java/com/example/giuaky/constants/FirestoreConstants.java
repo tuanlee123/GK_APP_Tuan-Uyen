@@ -41,4 +41,8 @@ public final class FirestoreConstants {
     public static final String FIELD_PHONE = "phone";
     public static final String FIELD_DETAIL_ADDRESS = "detailAddress";
     public static final String FIELD_IS_DEFAULT = "isDefault";
+    public static final String FIELD_CUSTOMER_NAME = "customerName";
+    public static final String FIELD_ADDRESS = "address";
+    public static final String FIELD_PAYMENT_METHOD = "paymentMethod";
+    public static final String FIELD_ITEMS = "items";
 }
