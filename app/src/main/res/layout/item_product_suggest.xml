@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="150dp"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="4dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginBottom="4dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    app:cardBackgroundColor="@color/colorSurface"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    app:strokeColor="@color/colorOutline"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/imgSuggest"
+            android:layout_width="match_parent"
+            android:layout_height="110dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_placeholder_tech"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.Rounded12"
+            tools:src="@drawable/ic_placeholder_tech" />
+
+        <TextView
+            android:id="@+id/tvSuggestName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            tools:text="Chuột Logitech MX Master 3S" />
+
+        <TextView
+            android:id="@+id/tvSuggestPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/colorSecondary"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            tools:text="2.490.000 ₫" />
+
+        <TextView
+            android:id="@+id/tvSuggestStats"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textColor="@color/colorTextSecondary"
+            android:textSize="11sp"
+            tools:text="⭐ 4.9 | Đã bán 89" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

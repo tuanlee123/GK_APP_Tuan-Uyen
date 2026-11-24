@@ -11,6 +11,7 @@
     <color name="colorTextPrimary">#0F172A</color>
     <color name="colorTextSecondary">#64748B</color>
     <color name="colorError">#DC2626</color>
+    <color name="colorRatingStar">#F59E0B</color>
 
     <!-- Legacy / Base compat colors -->
     <color name="black">#FF000000</color>

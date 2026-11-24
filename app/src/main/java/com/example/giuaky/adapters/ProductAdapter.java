@@ -18,10 +18,12 @@ import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
 
     public interface OnProductActionListener {
+        void onProductClick(Product product);
         void onAddToCart(Product product);
         void onBuyNow(Product product);
     }
@@ -61,11 +63,20 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         holder.tvProductName.setText(product.getName());
         holder.tvProductPrice.setText(CurrencyUtils.formatVnd(product.getPrice()));
 
+        String stats = String.format(Locale.getDefault(), "⭐ %.1f | Đã bán %d", product.getRating(), product.getSoldCount());
+        holder.tvProductStats.setText(stats);
+
         Glide.with(context)
                 .load(product.getImageUrl())
                 .placeholder(R.drawable.ic_placeholder_tech)
                 .error(R.drawable.ic_placeholder_tech)
                 .into(holder.imgProduct);
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onProductClick(product);
+            }
+        });
 
         holder.btnAddToCart.setOnClickListener(v -> {
             if (listener != null) {
@@ -89,6 +100,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         final ShapeableImageView imgProduct;
         final TextView tvProductName;
         final TextView tvProductPrice;
+        final TextView tvProductStats;
         final MaterialButton btnAddToCart;
         final MaterialButton btnBuyNow;
 
@@ -97,6 +109,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             imgProduct = itemView.findViewById(R.id.imgProduct);
             tvProductName = itemView.findViewById(R.id.tvProductName);
             tvProductPrice = itemView.findViewById(R.id.tvProductPrice);
+            tvProductStats = itemView.findViewById(R.id.tvProductStats);
             btnAddToCart = itemView.findViewById(R.id.btnAddToCart);
             btnBuyNow = itemView.findViewById(R.id.btnBuyNow);
         }

@@ -1,5 +1,6 @@
 package com.example.giuaky.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
     private CartFragment cartFragment;
     private ProfileFragment profileFragment;
     private Fragment activeFragment;
+    private BottomNavigationView bottomNav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
         setupFragments(savedInstanceState);
 
-        BottomNavigationView bottomNav = findViewById(R.id.bottomNavigationView);
+        bottomNav = findViewById(R.id.bottomNavigationView);
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_home) {
@@ -38,6 +40,21 @@ public class MainActivity extends AppCompatActivity {
             }
             return true;
         });
+
+        handleIntent(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
+        if (intent != null && "cart".equals(intent.getStringExtra("selectTab"))) {
+            navigateToCart();
+        }
     }
 
     private void setupFragments(Bundle savedInstanceState) {
@@ -75,5 +92,17 @@ public class MainActivity extends AppCompatActivity {
                 .show(target)
                 .commit();
         activeFragment = target;
+    }
+
+    public void navigateToHome() {
+        if (bottomNav != null) {
+            bottomNav.setSelectedItemId(R.id.nav_home);
+        }
+    }
+
+    public void navigateToCart() {
+        if (bottomNav != null) {
+            bottomNav.setSelectedItemId(R.id.nav_cart);
+        }
     }
 }

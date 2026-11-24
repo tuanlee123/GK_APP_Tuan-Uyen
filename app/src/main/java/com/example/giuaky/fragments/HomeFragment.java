@@ -1,11 +1,13 @@
 package com.example.giuaky.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -15,29 +17,34 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.giuaky.R;
+import com.example.giuaky.activities.CheckoutActivity;
+import com.example.giuaky.activities.ProductDetailActivity;
 import com.example.giuaky.adapters.ProductAdapter;
 import com.example.giuaky.constants.FirestoreConstants;
+import com.example.giuaky.models.CartItem;
 import com.example.giuaky.models.Category;
 import com.example.giuaky.models.Product;
 import com.example.giuaky.models.User;
+import com.example.giuaky.utils.SearchUtils;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class HomeFragment extends Fragment {
 
-    private android.widget.TextView tvGreeting;
+    private TextView tvGreeting;
     private RecyclerView rvProducts;
     private ChipGroup chipGroupCategories;
     private View layoutEmptyState;
-    private TextInputEditText edtSearch;
 
     private ProductAdapter productAdapter;
     private final List<Product> allProducts = new ArrayList<>();
@@ -71,22 +78,25 @@ public class HomeFragment extends Fragment {
         rvProducts = view.findViewById(R.id.rvProducts);
         chipGroupCategories = view.findViewById(R.id.chipGroupCategories);
         layoutEmptyState = view.findViewById(R.id.layoutEmptyState);
-        edtSearch = view.findViewById(R.id.edtSearch);
+        TextInputEditText edtSearch = view.findViewById(R.id.edtSearch);
 
         // Setup RecyclerView
         productAdapter = new ProductAdapter(requireContext(), new ArrayList<>(), new ProductAdapter.OnProductActionListener() {
             @Override
+            public void onProductClick(Product product) {
+                Intent intent = new Intent(requireContext(), ProductDetailActivity.class);
+                intent.putExtra("productId", product.getId());
+                startActivity(intent);
+            }
+
+            @Override
             public void onAddToCart(Product product) {
-                Toast.makeText(requireContext(),
-                        "Đã thêm " + product.getName() + " vào giỏ hàng",
-                        Toast.LENGTH_SHORT).show();
+                addProductToCart(product);
             }
 
             @Override
             public void onBuyNow(Product product) {
-                Toast.makeText(requireContext(),
-                        "Chọn mua nhanh: " + product.getName(),
-                        Toast.LENGTH_SHORT).show();
+                buyProductNow(product);
             }
         });
 
@@ -122,6 +132,66 @@ public class HomeFragment extends Fragment {
                 applyFilters();
             }
         });
+    }
+
+    private void addProductToCart(Product product) {
+        if (mAuth.getCurrentUser() == null) {
+            Toast.makeText(requireContext(), "Vui lòng đăng nhập để thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String uid = mAuth.getCurrentUser().getUid();
+        DocumentReference itemRef = db.collection(FirestoreConstants.COLLECTION_CARTS)
+                .document(uid)
+                .collection(FirestoreConstants.COLLECTION_ITEMS)
+                .document(product.getId());
+
+        itemRef.get().addOnSuccessListener(snapshot -> {
+            int currentQty = 0;
+            if (snapshot.exists()) {
+                CartItem existing = snapshot.toObject(CartItem.class);
+                if (existing != null) {
+                    currentQty = existing.getQuantity();
+                }
+            }
+
+            CartItem newItem = new CartItem(
+                    product.getId(),
+                    product.getName(),
+                    product.getImageUrl(),
+                    product.getPrice(),
+                    currentQty + 1
+            );
+
+            itemRef.set(newItem)
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(requireContext(), "Đã thêm " + product.getName() + " vào giỏ hàng", Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(requireContext(), "Lỗi thêm giỏ hàng: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+        });
+    }
+
+    private void buyProductNow(Product product) {
+        if (mAuth.getCurrentUser() == null) {
+            Toast.makeText(requireContext(), "Vui lòng đăng nhập để mua hàng", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        ArrayList<CartItem> buyList = new ArrayList<>();
+        buyList.add(new CartItem(
+                product.getId(),
+                product.getName(),
+                product.getImageUrl(),
+                product.getPrice(),
+                1
+        ));
+
+        Intent intent = new Intent(requireContext(), CheckoutActivity.class);
+        intent.putExtra("isFromCart", false);
+        intent.putExtra("cartItems", buyList);
+        startActivity(intent);
     }
 
     private void loadUserGreeting() {
@@ -204,10 +274,11 @@ public class HomeFragment extends Fragment {
 
         for (Product product : allProducts) {
             boolean matchesCategory = (selectedCategoryId == null)
-                    || (product.getCategoryId() != null && product.getCategoryId().equals(selectedCategoryId));
+                    || (product.getCategoryId() != null && Objects.equals(product.getCategoryId(), selectedCategoryId));
 
             boolean matchesSearch = searchKeyword.isEmpty()
-                    || (product.getName() != null && product.getName().toLowerCase().contains(searchKeyword.toLowerCase()));
+                    || SearchUtils.matches(product.getName(), searchKeyword)
+                    || SearchUtils.matches(product.getDescription(), searchKeyword);
 
             if (matchesCategory && matchesSearch) {
                 filtered.add(product);

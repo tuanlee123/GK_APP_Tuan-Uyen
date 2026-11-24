@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <!-- Top App Bar -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        app:cardBackgroundColor="@color/colorSurface"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="2dp"
+        app:strokeWidth="0dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp">
+
+            <ImageButton
+                android:id="@+id/btnBackAllReviews"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_centerVertical="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Quay lại"
+                android:src="@drawable/ic_back" />
+
+            <TextView
+                android:id="@+id/tvTitleAllReviews"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="Đánh giá sản phẩm"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Rating Overview Card -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:cardBackgroundColor="@color/colorSurface"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="2dp"
+        app:strokeColor="@color/colorOutline"
+        app:strokeWidth="1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tvOverviewProductName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text=""
+                android:textColor="@color/colorTextSecondary"
+                android:textSize="13sp"
+                tools:text="iPhone 15 Pro Max 256GB" />
+
+            <TextView
+                android:id="@+id/tvOverviewAvgRating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text=""
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                tools:text="4.8 / 5.0" />
+
+            <RatingBar
+                android:id="@+id/rbOverviewStars"
+                style="?android:attr/ratingBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:isIndicator="true"
+                android:numStars="5"
+                android:progressBackgroundTint="@color/colorOutline"
+                android:progressTint="@color/colorRatingStar"
+                android:rating="5"
+                android:secondaryProgressTint="@color/colorRatingStar"
+                android:stepSize="0.1" />
+
+            <TextView
+                android:id="@+id/tvOverviewTotalCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text=""
+                android:textColor="@color/colorTextSecondary"
+                android:textSize="13sp"
+                tools:text="12 lượt đánh giá" />
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Star Filter Chips (Horizontal) -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:scrollbars="none">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupRating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:selectionRequired="true"
+            app:singleLine="true"
+            app:singleSelection="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipFilterAll"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="Tất cả (0)"
+                android:textColor="@color/colorTextPrimary" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipFilter5Star"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="5 ★ (0)"
+                android:textColor="@color/colorTextPrimary" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipFilter4Star"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="4 ★ (0)"
+                android:textColor="@color/colorTextPrimary" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipFilter3Star"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3 ★ (0)"
+                android:textColor="@color/colorTextPrimary" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipFilter2Star"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2 ★ (0)"
+                android:textColor="@color/colorTextPrimary" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipFilter1Star"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1 ★ (0)"
+                android:textColor="@color/colorTextPrimary" />
+
+        </com.google.android.material.chip.ChipGroup>
+    </HorizontalScrollView>
+
+    <!-- Reviews List Container with Empty State -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvAllReviews"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="16dp"
+            tools:listitem="@layout/item_review" />
+
+        <TextView
+            android:id="@+id/tvEmptyFilteredReviews"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="24dp"
+            android:text="Chưa có đánh giá nào"
+            android:textColor="@color/colorTextSecondary"
+            android:textSize="14sp"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+    </FrameLayout>
+
+</LinearLayout>
