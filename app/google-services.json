@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "304135149688",
+    "project_id": "app-tuan-uyen",
+    "storage_bucket": "app-tuan-uyen.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:304135149688:android:0a7d5017799c18d5a6358d",
+        "android_client_info": {
+          "package_name": "com.example.giuaky"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCcOL8DcmMqBSfaizKfE5nrlKZqVNi8wx4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
